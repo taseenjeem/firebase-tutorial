@@ -1,5 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 import app from "../auth/firebase-init";
 import { useState } from "react";
 import Loading from "../components/Loading";
@@ -7,6 +12,7 @@ import Loading from "../components/Loading";
 const SignUpPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const redirect = useNavigate();
+  const provider = new GoogleAuthProvider();
 
   const auth = getAuth(app);
 
@@ -25,7 +31,21 @@ const SignUpPage = () => {
 
       if (authResult.user) {
         redirect("/home");
-        alert("Your account has been created!");
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogle = async () => {
+    setIsLoading(true);
+    try {
+      const singUpWithGoogle = await signInWithPopup(auth, provider);
+
+      if (singUpWithGoogle.user) {
+        redirect("/home");
       }
     } catch (error) {
       console.log(error);
@@ -95,6 +115,9 @@ const SignUpPage = () => {
                   </button>
                 </div>
               </form>
+              <button onClick={handleGoogle} className="btn btn-primary w-full">
+                Continue with google
+              </button>
             </div>
           </div>
         </div>
