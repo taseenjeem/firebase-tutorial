@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import app from "../auth/firebase-init";
 import { useState } from "react";
@@ -6,6 +6,7 @@ import Loading from "../components/Loading";
 
 const SignUpPage = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const redirect = useNavigate();
 
   const auth = getAuth(app);
 
@@ -16,18 +17,16 @@ const SignUpPage = () => {
     const password = event.target.userPassword.value;
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-          // Signed up
-          const user = userCredential.user;
-          console.log(user);
-          // ...
-        })
-        .catch((error) => {
-          const errorCode = error.code;
-          const errorMessage = error.message;
-          // ..
-        });
+      const authResult = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      if (authResult.user) {
+        redirect("/home");
+        alert("Your account has been created!");
+      }
     } catch (error) {
       console.log(error);
     } finally {
