@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   signInWithPopup,
+  sendEmailVerification,
 } from "firebase/auth";
 import app from "../auth/firebase-init";
 import { useState } from "react";
@@ -30,6 +31,7 @@ const SignUpPage = () => {
       );
 
       if (authResult.user) {
+        sendEmailVerification(auth.currentUser);
         redirect("/home");
       }
     } catch (error) {
